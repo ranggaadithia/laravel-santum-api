@@ -24,19 +24,27 @@ class AuthController extends Controller
                 ], 422);
             }
 
-            $user = UserModel::where('email', $request->email)->where('password', $request->password)->first();
+            $user = UserModel::where('email', $request->email)->first();
 
             if ($user != null) {
-                $token = $user->createToken('auth_token')->plainTextToken;
+                if (password_verify($request->password, $user->password)) {
+                    $token = $user->createToken('auth_token')->plainTextToken;
 
-                return response()->json([
-                    'status' => 'Success',
-                    'message' => 'Login successful',
-                    'data' => [
-                        'user' => $user,
-                        'token' => $token
-                    ]
-                ], 200);
+                    return response()->json([
+                        'status' => 'Success',
+                        'message' => 'Login successful',
+                        'data' => [
+                            'user' => $user,
+                            'token' => $token
+                        ]
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => 'Failed',
+                        'message' => 'Password is incorrect',
+                        'data' => []
+                    ], 401);
+                }
             } else {
                 return response()->json([
                     'status' => 'Failed',
