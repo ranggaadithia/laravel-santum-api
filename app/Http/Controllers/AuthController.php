@@ -59,4 +59,40 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function register(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => 'required|email',
+                'password' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'Failed',
+                    'message' => $validator->errors()->all(),
+                    'data' => []
+                ], 422);
+            }
+
+            $user = UserModel::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ]);
+
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'Register successful',
+                'data' => $user
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to register',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

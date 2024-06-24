@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('size');
             $table->string('capacity');
             $table->string('description')->nullable(true);
-            $table->text('reason_for_booking');
             $table->timestamps();
         });
     }
